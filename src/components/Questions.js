@@ -60,7 +60,7 @@ class Questions extends Component {
                 )
                 .map((question) => {
                   return (
-                    <div className="box" key={question.id}>
+                    <div  key={question.id}>
                       <PollBox id={question.id} />
                     </div>
                   );
@@ -80,7 +80,7 @@ class Questions extends Component {
                 )
                 .map((question) => {
                   return (
-                    <div className="box" key={question.id}>
+                    <div  key={question.id}>
                       <PollBox id={question.id} />
                     </div>
                   );
