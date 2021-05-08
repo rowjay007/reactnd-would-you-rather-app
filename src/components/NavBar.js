@@ -14,7 +14,7 @@ const NavBar = ({ authUser, users }) => (
               <Link to="/">HOME</Link>
             </li>
             <li>
-              <Link to="/add">NEW QUESTION</Link>
+              <Link to="/addquestion">NEW QUESTION</Link>
             </li>
             <li>
               <Link to="/leaderboard">LEADERBOARD</Link>
@@ -39,7 +39,7 @@ const NavBar = ({ authUser, users }) => (
               <Link to="/">HOME</Link>
             </li>
             <li>
-              <Link to="/add">NEW QUESTION</Link>
+              <Link to="/addquestion">NEW QUESTION</Link>
             </li>
             <li>
               <Link to="/leaderboard">LEADERBOARD</Link>

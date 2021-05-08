@@ -1,18 +1,18 @@
 import React from "react";
 import { connect } from "react-redux";
 
-const LeaderboardBox = ({ name, avatar, answers, questions }) => {
+const NewPoll = ({ name, avatar, answers, questions }) => {
   if (this.props === null) {
     return <p>This question does not exist.</p>;
   } else {
     return (
-      <div >
-        <div >
-          <div >
-            <div >
-              <img src={avatar} alt=""  />
+      <div>
+        <div>
+          <div>
+            <div>
+              <img src={avatar} alt="" />
             </div>
-            <div >
+            <div>
               <h2>{name}</h2>
               <p>
                 Answered questions <span>{answers}</span>
@@ -22,9 +22,9 @@ const LeaderboardBox = ({ name, avatar, answers, questions }) => {
                 Created questions <span>{questions}</span>
               </p>
             </div>
-            <div >
+            <div>
               <h3>Score</h3>
-              <span >{answers + questions}</span>
+              <span>{answers + questions}</span>
             </div>
           </div>
         </div>
@@ -32,7 +32,6 @@ const LeaderboardBox = ({ name, avatar, answers, questions }) => {
     );
   }
 };
-
 function mapStateToProps({ users }, { id }) {
   const user = users[id];
 
@@ -44,4 +43,4 @@ function mapStateToProps({ users }, { id }) {
   };
 }
 
-export default connect(mapStateToProps)(LeaderboardBox);
+export default connect(mapStateToProps)(NewPoll);

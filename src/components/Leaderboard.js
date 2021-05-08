@@ -4,8 +4,8 @@ import PropTypes from "prop-types";
 import NewPoll from "./NewPoll";
 
 const Leaderboard = ({ users }) => (
-  <div className="container content">
-    <div className="row">
+  <div>
+    <div >
       {Object.keys(users)
         .map((user) => {
           return {
