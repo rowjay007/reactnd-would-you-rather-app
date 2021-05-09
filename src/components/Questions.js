@@ -18,7 +18,7 @@ class Questions extends Component {
   render() {
     const { orderedQuestions } = this.props;
 
-    return ( 
+    return (
       <div>
         <div>
           <div>

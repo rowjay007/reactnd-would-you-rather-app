@@ -5,7 +5,7 @@ import NewPoll from "./NewPoll";
 
 const Leaderboard = ({ users }) => (
   <div>
-    <div >
+    <div>
       {Object.keys(users)
         .map((user) => {
           return {

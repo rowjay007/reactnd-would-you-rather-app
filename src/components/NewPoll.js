@@ -1,10 +1,12 @@
 import React from "react";
 import { connect } from "react-redux";
 
-const NewPoll = ({ name, avatar, answers, questions }) => {
-  if (this.props === null) {
+const NewPoll = (props) => {
+  const { name, avatar, answers, questions } = props
+  if (props === null) {
     return <p>This question does not exist.</p>;
   } else {
+    
     return (
       <div>
         <div>
@@ -31,7 +33,7 @@ const NewPoll = ({ name, avatar, answers, questions }) => {
       </div>
     );
   }
-};
+}
 function mapStateToProps({ users }, { id }) {
   const user = users[id];
 
