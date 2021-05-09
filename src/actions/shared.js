@@ -1,60 +1,49 @@
-import { getInitialData, saveQuestion, saveQuestionAnswer } from "../utils/api";
-import { receiveUsers, addUserQuestion, answerQuestion } from "./users";
-import { receiveQuestions, addQuestion, addQuestionAnswer } from "./questions";
-import { setAuthUser } from "./authUser";
+import { getInitialData } from "../utils/api";
 
-const AUTHED_ID = null;
+// React Redux Loading Action Creators
+import { showLoading, hideLoading } from "react-redux-loading";
 
+// Action Creators
+import { receiveUsers, addQuestion, handleSaveAnswerUser } from "./users";
+import {
+  receiveQuestions,
+  handleSaveAnswerQuestion,
+  handleAddNewQuestion,
+} from "./questions";
+
+// Async Action Creator for getting and sending the initial app data to the Redux Store
 export function handleInitialData() {
   return (dispatch) => {
-    return getInitialData()
-      .then(({ users, questions }) => {
-        dispatch(receiveQuestions(questions));
-        dispatch(receiveUsers(users));
-        dispatch(setAuthUser(AUTHED_ID));
-      })
-      .catch(function (error) {
-        alert("There was an error loading initial data: ", error);
-      });
+    return getInitialData().then(({ users, questions }) => {
+      // Dispatch the Initial Data Actions
+      dispatch(receiveUsers(users));
+      dispatch(receiveQuestions(questions));
+    });
   };
 }
 
-export function handleAddQuestion(optionOneText, optionTwoText) {
-  return (dispatch, getState) => {
-    const { authUser } = getState();
+// Async Action Creator for dispatching the actions related to a user voting on a question
+export function handleSaveAnswer(qid, answer) {
+  return (dispatch) => {
+    dispatch(showLoading());
 
-
-    return saveQuestion({
-      optionOneText,
-      optionTwoText,
-      author: authUser,
-    })
-      .then((question) => {
-        dispatch(addQuestion(question));
-        dispatch(addUserQuestion(authUser, question.id));
-      })
-      .catch(function (error) {
-        alert("There was an error adding new question:", error);
-      });
+    dispatch(handleSaveAnswerQuestion(qid, answer));
+    dispatch(handleSaveAnswerUser(qid, answer)).then(() =>
+      dispatch(hideLoading())
+    );
   };
 }
 
-export function handleAnswerQuestion(questionID, option) {
-  return (dispatch, getState) => {
-    const { authUser } = getState();
+// Async Action Creator for dispatching the actions related to a user creating a question
+export function handleAddQuestion(optionOneText, optionTwoText, loginUser) {
+  return (dispatch) => {
+    dispatch(showLoading());
 
-
-    return saveQuestionAnswer({
-      authUser,
-      qid: questionID,
-      answer: option,
-    })
-      .then(() => {
-        dispatch(answerQuestion(authUser, questionID, option));
-        dispatch(addQuestionAnswer(authUser, questionID, option));
-      })
-      .catch(function (error) {
-        alert("There was an error answering a question: ", error);
-      });
+    return dispatch(handleAddNewQuestion(optionOneText, optionTwoText)).then(
+      (question) => {
+        dispatch(addQuestion(loginUser, question.question.id));
+        dispatch(hideLoading());
+      }
+    );
   };
 }

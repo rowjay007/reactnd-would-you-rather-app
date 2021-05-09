@@ -1,66 +1,108 @@
 import React, { Component } from "react";
+
+// React Redux Connect function
 import { connect } from "react-redux";
-import { setAuthUser } from "../actions/authUser";
-import { withRouter } from "react-router-dom";
+
+// React Router Redirect Component
+import { Redirect } from "react-router-dom";
+
+// loginUser Function
+import { loginUser } from "../actions/loginUser";
 
 class Login extends Component {
   state = {
-    user: "none",
+    username: "",
+    loginFail: false,
   };
 
-  changeUser = (e) => {
-    const user = e.target.value;
-    this.setState(() => ({ user }));
+  // Used for the Controlled Component
+  handleChange = (e) => {
+    const username = e.target.value;
+
+    this.setState(() => ({
+      username,
+    }));
+  };
+
+  showHelp = (e) => {
+    e.preventDefault();
+
+    const { usernames } = this.props;
+
+    // Display the proper usernames to be used on login
+    window.alert(
+      "Login Help:\nUse one of the following usernames to login...\n\n" +
+        usernames.join(", ")
+    );
   };
 
   handleLogin = (e) => {
     e.preventDefault();
-    this.props.dispatch(setAuthUser(this.state.user));
-    this.props.history.goBack();
+
+    const { username } = this.state;
+    const { dispatch, usernames } = this.props;
+
+    // Check if the given Username matches an existing User
+    if (usernames.indexOf(username) > -1) {
+      // Dispatch the LOGIN_USER action
+      dispatch(loginUser(username));
+
+      // Reset the component State
+      this.setState({
+        username: "",
+        loginFail: false,
+      });
+    } else {
+      // Set the component State for a failed login
+      this.setState({
+        username: "",
+        loginFail: true,
+      });
+    }
   };
 
   render() {
+    const { username } = this.state;
+
+    if (this.props.loginUser) {
+      return <Redirect to={this.props.location.state.returnPath} />;
+    }
+
     return (
-      <div>
-        <div>
-          <h1>Welcome to the Would You Rather App!</h1>
-        </div>
-
-        <div>
-          <div>
-            <div>
-              <div>
-                <span>Please sign in to continue</span>
-                <form onSubmit={this.handleLogin}>
-                  <select onChange={this.changeUser} value={this.state.user}>
-                    <option value="none" disabled>
-                      Choose user
-                    </option>
-                    {this.props.userIds.map((userId) => (
-                      <option key={userId} value={userId}>
-                        {this.props.users[userId].name}
-                      </option>
-                    ))}
-                  </select>
-
-                  <button disabled={this.state.user === "none"}>
-                    Sign In
-                  </button>
-                </form>
-              </div>
-            </div>
+      <div className="login">
+        <h2 className="center">Would You Rather...?</h2>
+        <form className="login-form" onSubmit={this.handleLogin}>
+          <input
+            id="username-input"
+            className="input"
+            type="text"
+            placeholder="Who are you?"
+            value={username}
+            onChange={this.handleChange}
+          />
+          {this.state.loginFail && (
+            <p className="login-error">Invalid Username. Try again.</p>
+          )}
+          <div className="btn-login-group">
+            <button className="btn" type="submit">
+              Login
+            </button>
+            <button className="btn" type="button" onClick={this.showHelp}>
+              Help
+            </button>
           </div>
-        </div>
+        </form>
       </div>
     );
   }
 }
 
-function mapStateToProps({ users }) {
+// Map the usernames to the Component props
+function mapStateToProps({ users, loginUser }) {
   return {
-    userIds: Object.keys(users),
-    users,
+    usernames: Object.keys(users),
+    loginUser,
   };
 }
 
-export default withRouter(connect(mapStateToProps)(Login));
+export default connect(mapStateToProps)(Login);

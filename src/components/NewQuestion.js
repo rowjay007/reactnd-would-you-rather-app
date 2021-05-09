@@ -1,92 +1,114 @@
 import React, { Component } from "react";
+
+// React Redux Connect function
 import { connect } from "react-redux";
+
+// React Router Redirect Component
+import { Redirect } from "react-router-dom";
+
+// handleNewQuestion Function
 import { handleAddQuestion } from "../actions/shared";
-import { withRouter } from "react-router-dom";
 
 class NewQuestion extends Component {
   state = {
-    questionOne: "",
-    questionTwo: "",
+    optionOne: "",
+    optionTwo: "",
+    toHome: false,
   };
 
-  handleQuestionOne = (e) => {
-    const questionOne = e.target.value;
+  handleOptionOneChange = (e) => {
+    const optionOne = e.target.value;
+
     this.setState(() => ({
-      questionOne,
+      optionOne,
     }));
   };
 
-  handleQuestionTwo = (e) => {
-    const questionTwo = e.target.value;
+  handleOptionTwoChange = (e) => {
+    const optionTwo = e.target.value;
+
     this.setState(() => ({
-      questionTwo,
+      optionTwo,
     }));
   };
 
-  handleSubmit = (e) => {
+  handleAddQuestion = (e, optionOne, optionTwo) => {
     e.preventDefault();
 
-    const { questionOne, questionTwo } = this.state;
-    const { dispatch } = this.props;
+    const { dispatch, loginUser } = this.props;
 
-    dispatch(handleAddQuestion(questionOne, questionTwo));
-
-    this.setState(() => ({
-      questionOne: "",
-      questionTwo: "",
-    }));
-
-    this.props.history.push("/");
+    dispatch(handleAddQuestion(optionOne, optionTwo, loginUser)).then(() =>
+      // Is there something that should be checked for setting toHome?
+      this.setState({
+        optionOne: "",
+        optionTwo: "",
+        toHome: true,
+      })
+    );
   };
 
   render() {
-    return (
-      <div >
-        <div >
-          <h1 >Create New Question</h1>
-        </div>
+    const { optionOne, optionTwo } = this.state;
 
-        <div >
-          <div >
-            <div >
-              <div >
-                <div >
-                  <h6>Complete the question:</h6>
-                </div>
-                <div >
-                  <h1>Would you rather...</h1>
-                  <form onSubmit={this.handleSubmit}>
-                    <input
-                      type="text"
-                      placeholder="Enter option one "
-                      value={this.state.questionOne}
-                      onChange={this.handleQuestionOne}
-                    />
-                    <center>or</center>
-                    <input
-                      type="text"
-                      placeholder="Enter option two "
-                      value={this.state.questionTwo}
-                      onChange={this.handleQuestionTwo}
-                    />
-                    <button
-                      disabled={
-                        this.state.questionOne === "" ||
-                        this.state.questionTwo === ""
-                      }
-                    >
-                      SUBMIT QUESTIONS
-                      <i >arrow_right</i>
-                    </button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    if (!this.props.loginUser) {
+      return (
+        <Redirect
+          to={{
+            pathname: "/login",
+            state: {
+              returnPath: "/add",
+            },
+          }}
+        />
+      );
+    }
+
+    if (this.state.toHome) {
+      return <Redirect to="/" />;
+    }
+
+    return (
+      <div className="add-question">
+        <h3 className="center">Add a Question</h3>
+        <form
+          className="add-question-form"
+          onSubmit={(e) => this.handleAddQuestion(e, optionOne, optionTwo)}
+        >
+          <input
+            id="optionOne"
+            className="input"
+            type="text"
+            placeholder="Option One"
+            value={optionOne}
+            onChange={this.handleOptionOneChange}
+          />
+          <input
+            id="optionTwo"
+            className="input"
+            type="text"
+            placeholder="Option Two"
+            value={optionTwo}
+            onChange={this.handleOptionTwoChange}
+          />
+          {optionOne && optionTwo ? (
+            <button className="btn" type="submit">
+              Ask Question
+            </button>
+          ) : (
+            <button className="btn" type="button" disabled>
+              Ask Question
+            </button>
+          )}
+        </form>
       </div>
     );
   }
 }
 
-export default withRouter(connect()(NewQuestion));
+function mapStateToProps({ loginUser }) {
+  return {
+    loginUser,
+  };
+}
+
+export default connect(mapStateToProps)(NewQuestion);

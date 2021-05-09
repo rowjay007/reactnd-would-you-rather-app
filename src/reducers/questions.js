@@ -1,9 +1,10 @@
 import {
   RECEIVE_QUESTIONS,
   ADD_QUESTION,
-  ADD_QUESTION_ANSWER,
+  SAVE_QUESTION,
 } from "../actions/questions";
 
+// Questions Reducer Function
 export default function questions(state = {}, action) {
   switch (action.type) {
     case RECEIVE_QUESTIONS:
@@ -11,25 +12,27 @@ export default function questions(state = {}, action) {
         ...state,
         ...action.questions,
       };
+
     case ADD_QUESTION:
       return {
         ...state,
         [action.question.id]: action.question,
       };
-    case ADD_QUESTION_ANSWER:
+
+    case SAVE_QUESTION:
       return {
         ...state,
-        [action.questionID]: {
-          ...state[action.questionID],
-          [action.option]: {
-            ...state[action.questionID][action.option],
-            votes: [
-              ...state[action.questionID][action.option].votes,
-              action.authUser,
-            ],
+        [action.qid]: {
+          ...state[action.qid],
+          [action.answer]: {
+            ...state[action.qid][action.answer],
+            votes: state[action.qid][action.answer].votes.concat([
+              action.loginUser,
+            ]),
           },
         },
       };
+
     default:
       return state;
   }

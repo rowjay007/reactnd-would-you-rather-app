@@ -1,7 +1,11 @@
-export const RECEIVE_USERS = "RECEIVE_USERS";
-export const ADD_USER_QUESTION = "ADD_USER_QUESTION";
-export const ANSWER_QUESTION = "ANSWER_QUESTION";
+import { saveQuestionAnswer } from "../utils/api";
 
+// Users Action Types
+export const RECEIVE_USERS = "RECEIVE_USERS";
+export const SAVE_QUESTION = "SAVE_QUESTION";
+export const ADD_QUESTION = "ADD_QUESTION_TO_USER";
+
+// Receive Users Action Creator
 export function receiveUsers(users) {
   return {
     type: RECEIVE_USERS,
@@ -9,19 +13,32 @@ export function receiveUsers(users) {
   };
 }
 
-export function addUserQuestion(authUser, questionID) {
+// Save Question Answer Action Creator
+export function saveAnswer(loginUser, qid, answer) {
   return {
-    type: ADD_USER_QUESTION,
-    authUser,
-    questionID,
+    type: SAVE_QUESTION,
+    loginUser,
+    qid,
+    answer,
   };
 }
 
-export function answerQuestion(authUser, questionID, option) {
+// Add Question Action Creator
+export function addQuestion(loginUser, qid) {
   return {
-    type: ANSWER_QUESTION,
-    authUser,
-    questionID,
-    option,
+    type: ADD_QUESTION,
+    loginUser,
+    qid,
+  };
+}
+
+// Save Question Answer Async Action Creator Function (uses the Thunk middleware)
+export function handleSaveAnswerUser(qid, answer) {
+  return (dispatch, getState) => {
+    const { loginUser } = getState();
+
+    return saveQuestionAnswer({ authedUser: loginUser, qid, answer }).then(() =>
+      dispatch(saveAnswer(loginUser, qid, answer))
+    );
   };
 }
